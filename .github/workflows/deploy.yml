@@ -44,4 +44,4 @@ jobs:
             --image ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }} \
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
-            --set-env-vars GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }}
+            --set-env-vars GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},SLACK_WEBHOOK_URL=${{ secrets.SLACK_WEBHOOK_URL }},GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}

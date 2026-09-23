@@ -13,7 +13,8 @@ from google.genai.errors import ClientError, ServerError
 
 load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+groq_api_key = os.getenv("GROQ_API_KEY")
+groq_client = Groq(api_key=groq_api_key) if groq_api_key else None
 server_params = StdioServerParameters(command="python3", args=["mcp_server.py"])
 
 
@@ -35,6 +36,9 @@ def mcp_tool_to_openai_format(mcp_tool):
     }
 
 async def investigate_with_groq(session, mcp_tools, anomaly_description: str) -> str:
+    if groq_client is None:
+        return "Fallback unavailable :GROQ_API_KEY not configured. Please check deployment environment variables."
+
     openai_tools = [mcp_tool_to_openai_format(t) for t in mcp_tools.tools]
 
     messages = [
