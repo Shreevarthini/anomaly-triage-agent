@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Anomaly Triage Agent</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width: 800px; margin: 60px auto; padding: 0 20px; background: #0d1117; color: #e6edf3; }
+    h1 { font-size: 1.6em; }
+    p.subtitle { color: #8b949e; margin-top: -10px; }
+    button { background: #238636; color: white; border: none; padding: 12px 24px; font-size: 1em; border-radius: 6px; cursor: pointer; }
+    button:disabled { background: #30363d; cursor: not-allowed; }
+    .result { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-top: 16px; }
+    .severity-HIGH { color: #f85149; font-weight: bold; }
+    .severity-MEDIUM { color: #d29922; font-weight: bold; }
+    .severity-LOW { color: #3fb950; font-weight: bold; }
+    .anomaly-text { color: #8b949e; font-size: 0.9em; margin-bottom: 8px; }
+    #status { margin-top: 16px; color: #8b949e; }
+  </style>
+</head>
+<body>
+  <h1> Data Pipeline Anomaly-Triage Agent</h1>
+  <p class="subtitle">An agentic AI system that detects data anomalies and auto-investigates root causes using MCP tools + Gemini.</p>
+
+  <button id="runBtn" onclick="runPipeline()">Run Pipeline Check</button>
+  <div id="status"></div>
+  <div id="results"></div>
+
+  <script>
+    async function runPipeline() {
+      const btn = document.getElementById('runBtn');
+      const status = document.getElementById('status');
+      const results = document.getElementById('results');
+
+      btn.disabled = true;
+      btn.textContent = 'Investigating...';
+      status.textContent = 'Generating data, detecting anomalies, and running agent investigation — this can take 10-20 seconds.';
+      results.innerHTML = '';
+
+      try {
+        const res = await fetch('/run-pipeline', { method: 'POST' });
+        const data = await res.json();
+
+        status.textContent = `Found ${data.anomalies_found} anomaly(ies).`;
+
+        data.results.forEach(item => {
+          const severityMatch = item.diagnosis.match(/Severity:\s*\**(HIGH|MEDIUM|LOW)\**/i);
+          const severity = severityMatch ? severityMatch[1].toUpperCase() : 'UNKNOWN';
+
+          const div = document.createElement('div');
+          div.className = 'result';
+          div.innerHTML = `
+            <div class="anomaly-text">${item.anomaly}</div>
+            <div class="severity-${severity}">Severity: ${severity}</div>
+            <div>${item.diagnosis.replace(/\n/g, '<br>')}</div>
+          `;
+          results.appendChild(div);
+        });
+      } catch (err) {
+        status.textContent = 'Error running pipeline: ' + err;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Run Pipeline Check';
+      }
+    }
+  </script>
+</body>
+</html>
