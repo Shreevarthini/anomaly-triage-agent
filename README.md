@@ -3,7 +3,7 @@
 An agentic AI system that monitors a data pipeline, detects anomalies, and automatically investigates root causes using an LLM agent with MCP (Model Context Protocol) tools - deployed to production on Google Cloud Run with full CI/CD.
 
 **Live demo:** https://anomaly-agent-513866903957.us-central1.run.app/
-
+## Demo: https://youtu.be/4aSwZubUqSs
 ---
 
 ## What it does
