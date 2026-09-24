@@ -4,7 +4,7 @@ from anomaly_detector import run_all_detectors, describe_anomaly
 from agent_mcp import investigate_anomaly
 
 
-async def run_pipeline(csv_path: str = "orders_data.csv"):
+async def run_pipeline(csv_path: str = "data/orders_data.csv"):
     df = pd.read_csv(csv_path)
     result = run_all_detectors(df)
     flagged = result[result["is_anomaly"]]

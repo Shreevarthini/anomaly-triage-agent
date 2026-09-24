@@ -1,28 +1,31 @@
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+from load_real_data import load_and_aggregate
 
 np.random.seed(42)
 
-def generate_normal_orders(hours=72, base_orders_per_hour=50):
-    timestamps = [datetime.now() - timedelta(hours=hours - i) for i in range(hours)]
-    order_counts = np.random.normal(loc=base_orders_per_hour, scale=5, size=hours).astype(int)
-    order_counts = np.clip(order_counts, 0, None) 
-    return pd.DataFrame({"timestamp": timestamps, "order_count": order_counts})
+def generate_normal_orders(hours=336, base_orders_per_hour=None):
+    return load_and_aggregate(hours=hours)
 
 def inject_anomalies(df):
     df = df.copy()
     df["anomaly_injected"] = False
-    df.loc[20, "order_count"] = 3
-    df.loc[20, "anomaly_injected"] = True
-    df.loc[45, "order_count"] = 400
-    df.loc[45, "anomaly_injected"] = True
+    drop_idx = len(df) // 3
+    spike_idx = (len(df) // 3) * 2
+
+    normal_value = df.loc[drop_idx, "order_count"]
+    df.loc[drop_idx, "order_count"] = 0
+    df.loc[drop_idx, "anomaly_injected"] = True
+
+    normal_value = df.loc[spike_idx, "order_count"]
+    df.loc[spike_idx, "order_count"] = int(normal_value * 8)
+    df.loc[spike_idx, "anomaly_injected"] = True
 
     return df
 
 if __name__ == "__main__":
     df = generate_normal_orders()
     df = inject_anomalies(df)
-    df.to_csv("orders_data.csv", index=False)
+    df.to_csv("data/orders_data.csv", index=False)
     print(df)
     print(f"\nSaved {len(df)} rows to orders_data.csv")
