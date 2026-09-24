@@ -1,6 +1,6 @@
 import pandas as pd
 
-def load_and_aggregate(csv_path="raw_data/data.csv", hours=72):
+def load_and_aggregate(csv_path="raw_data/data.csv", hours=336):
 
     df = pd.read_csv(csv_path, encoding="ISO-8859-1") 
     df = df.dropna(subset=["InvoiceDate", "InvoiceNo"])

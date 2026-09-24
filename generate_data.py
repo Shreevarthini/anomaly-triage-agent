@@ -5,7 +5,9 @@ from load_real_data import load_and_aggregate
 np.random.seed(42)
 
 def generate_normal_orders(hours=336, base_orders_per_hour=None):
-    return load_and_aggregate(hours=hours)
+    df = pd.read_csv("data/real_orders_baseline.csv")
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+    return df.tail(hours).reset_index(drop=True)
 
 def inject_anomalies(df):
     df = df.copy()
